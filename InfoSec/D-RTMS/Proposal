@@ -1,0 +1,161 @@
+================================================================================================================================================
+The proposal for a standardized FOSS D-RTM
+================================================================================================================================================
+
+Feel free to share, modify, and mirror this in TrenchBoot Docs/Git/Wiki
+________________________________________________________________________________________________________________________________________________
+Brief terminology:
+
+D-RTM - Dynamic Root of Trust measure system
+Fixed/Static - Referring to data in a unmodified state either via ROM embedded in silicone or low level firmware (semi-static)
+Hot/Active/Dynamic/Online - Referring to changing in real time
+Cold/Offline/inactive - Referring to dynamic data that is physically(as with block devices) or virtually powered off or unmounted respectively.
+Userspace - Referring to daemons, kernel modules, system calls, active/inactive programs.
+Kernelspace - Referring to kernel address space
+vTPM/iTPM - A virtual or integrated TPM within a physical CPU core or VM respectively
+vBIOS - A virtual BIOS presented to a VM
+Softboot - "software reboot" avoiding a hardware reboot init POST
+OTPs - One time passwords
+
+(Not all terms may be formal or even concrete but an attempt to build a standardized form of communication within this subject and terminology,
+which can evolve with more discussion)
+_________________________________________________________________________________________________
+
+>What is a RTM?
+A dedicated hardware root of trust system involving (whilst not limited to) ROM within CPU die,
+specialized hardware on the PCB, and corresponding embedded firmware within the UEFI/BIOS.
+
+>What sets a D-RTM apart?
+
+Whilst D-RTMs can additional rely on a fixed RTM themselves as a static measurement they differ in that they work dynamically,
+and can be quite expansive in some implementations.
+Dynamic in this context means how they handle firmware, kernel, and user space validation/enforcement beyond a single root of authority.
+
+A example of common root of trust (from the OS perspective) would be Secureboot which is semi-static in nature that measures,
+and enforces the state that resides a layer below it the firmware.
+Secureboot can also be considered a chain of trust because itself relies upon various roots of trust.
+
+>Why do "I" want or for that matter need a D-RTMS?
+
+Being dynamic means flexible authentication and validation.
+On a technicality, introducing external influence to a static environment can theoretically introduce a negative aspect,
+but positively it also introduces the ability to blacklist past forms of authentication or validation can be excluded in the event they are compromised,
+or failed, and offer newer validations in real time by the fact is isn't affixed in a ROM die.
+(D-RTM systems can additionally use multiple ROMs of static RTMs to augment measured environments as they aren't required to exclude them)
+
+This level of audit ability has traditionally been offered only within the Enterprise and ISPs involving various unique OEM and vendor firmware+software,
+implementations.
+
+>Aren't the existing protections enough?
+
+Secureboot by design does not promise top to bottom hardware security,
+it "measures" the boot process in comparison to the values that it was setup to follow and it enforces that environment until passing it off.
+It does not audit underlying firmware in any matter prior to its setup but it will remain a consistent,
+and valid environment extending to its defined payload.(bootloader or kernel if using an embedded EFI stub)
+
+It is then upon the boot loader or kernel to maintain that validation.
+In that way you are wholly dependent upon the underlying firmware within your UEFI/BIOS to not be tampered with prior to set up.
+The firmware being a root of trust.
+
+Secureboot protections in this context are "static" in nature meaning they only protect offline data and do not evolve/adapt with,
+contextual logic beyond itself.
+They can be semi-static in the context that you can import your own keys, but we are referring to static or dynamic load time protection.
+
+Up until that point everything can be statically measured but now you are within a OS which is a dynamic environment producing new kernel,
+and userspace processes, sleeping processes, forking them, respawning, data trans versing different physical mediums with differing underlying circuitry,
+side loading 3rd party applications.
+The randomness of general computing systems can present some issues as opposed to how RTOSes, FPGAs, ASICS, MicroControllers with fixed instructions operate.
+
+Processes can segfault, run off into a race condition through error or targeted privilege escalations,
+the increasingly common buffer overflow exploits, speculative branch executions, and side channel attacks,
+modern rootkits persisting in non-volatile firmware on peripheral devices.
+
+Dealing with various processes of high authority you open your system up to situations of compromise,
+A chain of trust is as weak as a single link or in this case the weakest root, and a common process with high authority is the "root" user,
+which for example is why the "sudoers" file or kernel page table isolation exists.
+
+It's a attempt to reduce the total power of a single authority and partition it into a more structured and audit able form so in the event,
+of system compromise its exposure is limited.
+
+Using this measured environment can introduce other components that enforce that framework like SELinux which is a dynamic enforcer.
+The task and goals of a D-RTMS is to constantly juggle and measure based upon external and local validations,
+and utilize enforcement mechanisms within that framework while they transition to and from kernel/userspace across various physical mediums.
+
+D-RTMs can offer active protection while combined with other methods like "offline" full disk encryption or a external "watchdog" like a co-processor,
+or dedicated TPM which includes its own processor, RAM, and flash.
+
+>That's a lot of stuff, D-RTMs sound heavy and bloated!
+
+That doesn't mean everything has to part of the protocol as other modular components can do the heavy lifting and itself remains minuscule in comparison.
+
+>What about us hardware handicapped embedded users who always get left out?!?
+
+D-RTMs are actually the most vital(beyond rack servers) in the embedded space as these platforms majorly lack the required memory and resort to caches,
+swapping, and reliance on layered read only file systems.
+Take into account the lack of crypto hardware accelerators due to economics on these platforms which rarely have the processing power to do it in software.
+
+These validation checks could happen at every initial boot.
+There's also options to cross verify the environment retroactively over the network LIVE from another prior validated system.
+(PXE users grinning)
+
+This theoretically could allow a securely measured "portable" environment that moves over the network abstracted from its hardware.
+D-RTMs attempt to enforce a measured chain of trust "environment" inherited from targeted roots of trust (secureboot+signed-init/kernel for example)
+further augmented with other hardware/software inputs/validations of various authority levels which is maintained in real time via checks and balances.
+
+>Why re-invent the wheel?
+
+The beauty of a DRTMs is that it doesn't need to re-invent but use existing infrastructure with slight modifications,
+to extend that measured validation it into userspace.
+Processes like SELinux, or the existing kernel watchdog and related security modules.
+
+The dynamic nature being flexible can allow multiple factors of equal and/or hierarchical authority depending on implementations.
+Imagine a emergency protocol scenario where a "static" measured component fails at the hardware level,
+other components can be pre-selected to add in place additional authority for system accessibility.
+Multiple parts could add up their sum to equal a single component like a yubikey and a traditional password could substitute a dead CPU housing a iTPM.
+
+Some of these principles are basic in nature, but together are a requirement in forming a foundation which more complex systems can flourish,
+like sanitized cluster computing.
+Cluster in this sense references virtual containers, multiple physical systems, or even multiple individual CPU sockets.
+Computing environments like these require high data integrity for communication.
+
+TLDR:
+
+-DRTMs allow live end user interaction and authentication
+-DRTMs can present solutions and notify the end user of certain events
+-Sanitized data over the network or locally for cluster computing and mesh networks
+-Measure environments restored from hibernation/suspend
+-Measure data real time trans versing between swap or layered/union file systems and RAM (NFS/subvols/etc)
+-Measure data trans versing between physical SSD/NVMe/HDDs/GPU caches
+-Measurement of external peripherals with non-volatile RAM.
+-Maintain integrity of data when child processes are created/forked between local and remote host systems(namespaces, cgroups, microVMs, traditional VMs)
+-verified kernel hand off for softboot or updating. (forking of kernel or initializing a newer kernel after a update)
+
+Combining a tool like kinit/kexec/kgraf a softboot would allow updating the kernel loading into it whilst retaining a measured state,
+and bypassing the firmware initialize phase oh physical hardware.
+
+This also becomes beneficial when thinking in terms of guests running on a remote host server you don't control,
+(bypassing the UEFI/BIOS P.O.S.T. or vbios when used in VMs/containers) and potentially leading to reduced boot subsequent times.
+
+Additional dynamic authentication mechanisms
+-hardware tokens (U2F)
+-OTPs
+-XFA (combining multiple factors for fortified security including keys/passwords/cellular)
+-Dedicated modular TPMs (beyond the iTPM within CPU or Mobo)
+-Cold storage of a on disk vTPM that can be applied to future hardware TPMs
+-biometrics (not advised unless involving cascading methods)
+-Leverage remote authorization servers against each other with persisting context.
+-Validating emergency event protocols (events triggered in emergency circumstances or to validate concurrent tasks)
+________________________________________________________________________________________________________________________________________________
+Closing statement:
+
+D-RTMs are not a secret sauce in itself that will make you immune to all forms of abuse but working in cohesion with other projects,
+as a framework of measurements it forms a consistent "environment" that is verified/validated/authorized and can be extended into kernel and user space.
+(To the extent of the underlying components).
+
+================================================================================================================================================
+I didn't touch deeply on implementations as FOSS presents a unique opportunity and I'm more interested in getting the discussion started.
+People with talent in these lower level areas will be more apt at presenting informed decisions,
+and making them aware in a educated manner is a major essential role at this point.
+
+Beyond any clarifications I can expand upon my personal ideas and also cover some surrounding topics within the security umbrella,
+after I have prepared the material.
