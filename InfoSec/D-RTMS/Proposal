@@ -7,12 +7,12 @@ ________________________________________________________________________________
 Brief terminology:
 
 D-RTM - Dynamic Root of Trust measure system
-Fixed/Static - Referring to data in a unmodified state either via ROM embedded in silicone or low level firmware (semi-static)
+Fixed/Static - Referring to data in a unmodified state either via ROM embedded in die or low level firmware (semi-static)
 Hot/Active/Dynamic/Online - Referring to changing in real time
 Cold/Offline/inactive - Referring to dynamic data that is physically(as with block devices) or virtually powered off or unmounted respectively.
 Userspace - Referring to daemons, kernel modules, system calls, active/inactive programs.
 Kernelspace - Referring to kernel address space
-vTPM/iTPM - A virtual or integrated TPM within a physical CPU core or VM respectively
+vTPM/iTPM - A virtual or integrated TPM presented within a VM or embedded in a physical CPU, respectively.
 vBIOS - A virtual BIOS presented to a VM
 Softboot - "software reboot" avoiding a hardware reboot init POST
 OTPs - One time passwords
