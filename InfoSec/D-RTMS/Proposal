@@ -125,7 +125,8 @@ TLDR:
 -Sanitized data over the network or locally for cluster computing and mesh networks
 -Measure environments restored from hibernation/suspend
 -Measure data real time trans versing between swap or layered/union file systems and RAM (NFS/subvols/etc)
--Measure data trans versing between physical SSD/NVMe/HDDs/GPU caches
+-Measure data trans versing between physical SSDs/NVMe/HDDs/GPU caches and system RAM
+-Sanitize DMA communications between PCI BUS devices
 -Measurement of external peripherals with non-volatile RAM.
 -Maintain integrity of data when child processes are created/forked between local and remote host systems(namespaces, cgroups, microVMs, traditional VMs)
 -verified kernel hand off for softboot or updating. (forking of kernel or initializing a newer kernel after a update)
@@ -141,7 +142,7 @@ Additional dynamic authentication mechanisms
 -OTPs
 -XFA (combining multiple factors for fortified security including keys/passwords/cellular)
 -Dedicated modular TPMs (beyond the iTPM within CPU or Mobo)
--Cold storage of a on disk vTPM that can be applied to future hardware TPMs
+-Cold storage of a on disk vTPM that can be re-applied to future hardware TPMs
 -biometrics (not advised unless involving cascading methods)
 -Leverage remote authorization servers against each other with persisting context.
 -Validating emergency event protocols (events triggered in emergency circumstances or to validate concurrent tasks)
