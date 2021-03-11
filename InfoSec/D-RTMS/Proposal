@@ -7,7 +7,7 @@ ________________________________________________________________________________
 Brief terminology:
 
 D-RTM - Dynamic Root of Trust measure system
-Fixed/Static - Referring to data in a unmodified state either via ROM embedded in die or low level firmware (semi-static)
+Fixed/Static - Referring to data in a unmodified state either via ROM in die or low level firmware (semi-static)
 Hot/Active/Dynamic/Online - Referring to changing in real time
 Cold/Offline/inactive - Referring to dynamic data that is physically(as with block devices) or virtually powered off or unmounted respectively.
 Userspace - Referring to daemons, kernel modules, system calls, active/inactive programs.
@@ -124,12 +124,14 @@ TLDR:
 -DRTMs can present solutions and notify the end user of certain events
 -Sanitized data over the network or locally for cluster computing and mesh networks
 -Measure environments restored from hibernation/suspend
+-Measure environments restored from offline snapshots
+-Filesystem layer integration with metadata measurement and immutability (BTRFS) 
 -Measure data real time trans versing between swap or layered/union file systems and RAM (NFS/subvols/etc)
 -Measure data trans versing between physical SSDs/NVMe/HDDs/GPU caches and system RAM
 -Sanitize DMA communications between PCI BUS devices
 -Measurement of external peripherals with non-volatile RAM.
 -Maintain integrity of data when child processes are created/forked between local and remote host systems(namespaces, cgroups, microVMs, traditional VMs)
--verified kernel hand off for softboot or updating. (forking of kernel or initializing a newer kernel after a update)
+-Verified kernel hand off for softboot or updating. (forking of kernel or initializing a newer kernel after a update)
 
 Combining a tool like kinit/kexec/kgraf a softboot would allow updating the kernel loading into it whilst retaining a measured state,
 and bypassing the firmware initialize phase oh physical hardware.
